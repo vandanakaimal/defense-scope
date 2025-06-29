@@ -51,6 +51,51 @@ def is_threat(text):
     return any(keyword in text for keyword in threat_keywords)
 
 # ---------- Load News Data ----------
+import requests
+
+API_KEY = "ed55a22b0d5d42f1978363b89918b62b"
+
+def load_news():
+    url = (
+        f"https://newsapi.org/v2/everything?"
+        f"q=defense OR military OR war&"
+        f"language=en&"
+        f"pageSize=100&"
+        f"sortBy=publishedAt&"
+        f"apiKey={API_KEY}"
+    )
+    response = requests.get(url)
+    if response.status_code != 200:
+        st.error("❌ Failed to fetch live news.")
+        return pd.DataFrame()
+    
+    raw_data = response.json().get("articles", [])
+
+    processed = []
+    for article in raw_data:
+        title = article.get("title", "")
+        description = article.get("description", "")
+        source = article.get("source", {}).get("name", "Unknown")
+        date = article.get("publishedAt", "")[:10]
+        full_text = title + " " + description
+
+        sentiment = get_sentiment(full_text)
+        region = get_region(full_text)
+        threat = "⚠️ Yes" if is_threat(full_text) else "No"
+        lat, lon = country_coords.get(region, [0, 0])
+
+        processed.append({
+            "Title": title,
+            "Source": source,
+            "Date": date,
+            "Region": region,
+            "Sentiment": sentiment,
+            "Threat": threat,
+            "lat": lat,
+            "lon": lon
+        })
+
+    return pd.DataFrame(processed)
 
 
 # ---------- Streamlit UI ----------
