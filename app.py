@@ -68,35 +68,35 @@ def load_news():
         return pd.DataFrame()
     
     raw_data = response.json().get("articles", [])
-
     processed = []
-for article in raw_data:
-    title = article.get("title") or ""
-    description = article.get("description") or ""
-    source_data = article.get("source", {})
-    source = source_data.get("name") if isinstance(source_data, dict) else "Unknown"
-    date = article.get("publishedAt", "")[:10]
 
-    full_text = str(title) + " " + str(description)
+    for article in raw_data:
+        title = article.get("title") or ""
+        description = article.get("description") or ""
+        source_data = article.get("source", {})
+        source = source_data.get("name") if isinstance(source_data, dict) else "Unknown"
+        date = article.get("publishedAt", "")[:10]
 
-    sentiment = get_sentiment(full_text)
-    region = get_region(full_text)
-    threat = "⚠️ Yes" if is_threat(full_text) else "No"
-    lat, lon = country_coords.get(region, [0, 0])
+        full_text = str(title) + " " + str(description)
 
-    processed.append({
-        "Title": title,
-        "Source": source,
-        "Date": date,
-        "Region": region,
-        "Sentiment": sentiment,
-        "Threat": threat,
-        "lat": lat,
-        "lon": lon
-    })
+        sentiment = get_sentiment(full_text)
+        region = get_region(full_text)
+        threat = "⚠️ Yes" if is_threat(full_text) else "No"
+        lat, lon = country_coords.get(region, [0, 0])
 
+        processed.append({
+            "Title": title,
+            "Source": source,
+            "Date": date,
+            "Region": region,
+            "Sentiment": sentiment,
+            "Threat": threat,
+            "lat": lat,
+            "lon": lon
+        })
 
-return pd.DataFrame(processed)
+    return pd.DataFrame(processed)
+
 
 # ---------- Sidebar Refresh Button ----------
 st.sidebar.markdown("### 🔄 Manual Refresh")
