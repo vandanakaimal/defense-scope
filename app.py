@@ -51,69 +51,24 @@ def is_threat(text):
     return any(keyword in text for keyword in threat_keywords)
 
 # ---------- Load News Data ----------
-import requests
 
-API_KEY = "ed55a22b0d5d42f1978363b89918b62b"  # ← Replace with your real NewsAPI key
-
-def fetch_live_news():
-    url = (
-        f"https://newsapi.org/v2/everything?"
-        f"q=defense OR military OR war&"
-        f"language=en&"
-        f"pageSize=100&"
-        f"sortBy=publishedAt&"
-        f"apiKey={API_KEY}"
-    )
-    response = requests.get(url)
-    if response.status_code == 200:
-        return response.json().get("articles", [])
-    else:
-        st.error("Failed to fetch live news from NewsAPI.")
-        return []
-
-# Fetching real news
-raw_data = fetch_live_news()
-
-# Format it to match your processing loop structure
-for article in raw_data:
-    article["source"] = article.get("source", {}).get("name", "Unknown")
-    article["date"] = article.get("publishedAt", "")[:10]
-    article["description"] = article.get("description", "")
-
-
-# ---------- Analyze Each News Item ----------
-processed = []
-for article in raw_data:
-    title = article.get("title", "")
-    description = article.get("description", "")
-    source = article.get("source", "Unknown")
-    if isinstance(source, dict):
-        source = source.get("name", "Unknown")
-    date = article.get("publishedAt", "")[:10]  # or article.get("date")
-
-    full_text = title + " " + description
-    sentiment = get_sentiment(full_text)
-    region = get_region(full_text)
-    threat = "⚠️ Yes" if is_threat(full_text) else "No"
-    lat, lon = country_coords.get(region, [0, 0])
-
-    processed.append({
-        "Title": title,
-        "Source": source,
-        "Date": date,
-        "Region": region,
-        "Sentiment": sentiment,
-        "Threat": threat,
-        "lat": lat,
-        "lon": lon
-    })
-
-
-df = pd.DataFrame(processed)
 
 # ---------- Streamlit UI ----------
 st.set_page_config(page_title="DEFENSE SCOPE", layout="wide")
 st.title("🛰️ DEFENSE SCOPE – Global Defense News Sentiment Tracker")
+st.sidebar.markdown("### 🔄 Manual Refresh")
+if st.sidebar.button("Fetch Latest News"):
+    st.session_state['df'] = load_news()
+
+# Load data on first run
+if 'df' not in st.session_state:
+    st.session_state['df'] = load_news()
+
+df = st.session_state['df']
+
+# Optional timestamp
+st.sidebar.markdown(f"🕒 Last updated: {pd.Timestamp.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
 
 # Pie Chart
 st.subheader("🧠 Sentiment Overview")
