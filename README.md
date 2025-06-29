@@ -1,6 +1,7 @@
 # DEFENSE SCOPE 🛰️
 
 **DEFENSE SCOPE** is an AI-powered dashboard that fetches, analyzes, and visualizes real-time global defense news.
+https://defense-scope-pak5yikcg9bvpkmktayc65.streamlit.app/
 
 Built by a student passionate about space, AI, and national security, this tool combines:
 - 💬 Sentiment analysis
