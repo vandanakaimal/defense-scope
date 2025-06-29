@@ -53,7 +53,7 @@ def is_threat(text):
 # ---------- Load News Data ----------
 import requests
 
-API_KEY = "YOUR_NEWSAPI_KEY"  # ← Replace with your real NewsAPI key
+API_KEY = "ed55a22b0d5d42f1978363b89918b62b"  # ← Replace with your real NewsAPI key
 
 def fetch_live_news():
     url = (
