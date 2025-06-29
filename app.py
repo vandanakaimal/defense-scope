@@ -96,7 +96,7 @@ for article in raw_data:
     })
 
 
-    return pd.DataFrame(processed)
+return pd.DataFrame(processed)
 
 # ---------- Sidebar Refresh Button ----------
 st.sidebar.markdown("### 🔄 Manual Refresh")
