@@ -51,36 +51,62 @@ def is_threat(text):
     return any(keyword in text for keyword in threat_keywords)
 
 # ---------- Load News Data ----------
-from fetch_news import fetch_news
+import requests
 
-try:
-    raw_data = fetch_news()
-except:
-    with open("data/news.json") as f:
-        raw_data = json.load(f)
+API_KEY = "YOUR_NEWSAPI_KEY"  # ← Replace with your real NewsAPI key
+
+def fetch_live_news():
+    url = (
+        f"https://newsapi.org/v2/everything?"
+        f"q=defense OR military OR war&"
+        f"language=en&"
+        f"pageSize=100&"
+        f"sortBy=publishedAt&"
+        f"apiKey={API_KEY}"
+    )
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json().get("articles", [])
+    else:
+        st.error("Failed to fetch live news from NewsAPI.")
+        return []
+
+# Fetching real news
+raw_data = fetch_live_news()
+
+# Format it to match your processing loop structure
+for article in raw_data:
+    article["source"] = article.get("source", {}).get("name", "Unknown")
+    article["date"] = article.get("publishedAt", "")[:10]
+    article["description"] = article.get("description", "")
+
 
 # ---------- Analyze Each News Item ----------
 processed = []
 for article in raw_data:
-    full_text = article["title"] + " " + article["description"]
+    title = article.get("title", "")
+    description = article.get("description", "")
+    source = article.get("source", "Unknown")
+    if isinstance(source, dict):
+        source = source.get("name", "Unknown")
+    date = article.get("publishedAt", "")[:10]  # or article.get("date")
+
+    full_text = title + " " + description
     sentiment = get_sentiment(full_text)
     region = get_region(full_text)
     threat = "⚠️ Yes" if is_threat(full_text) else "No"
-    
-    # NEW: get latitude and longitude for the region
     lat, lon = country_coords.get(region, [0, 0])
 
     processed.append({
-        "Title": article["title"],
-        "Source": article["source"],
-        "Date": article["date"],
+        "Title": title,
+        "Source": source,
+        "Date": date,
         "Region": region,
         "Sentiment": sentiment,
         "Threat": threat,
         "lat": lat,
         "lon": lon
     })
-
 
 
 df = pd.DataFrame(processed)
@@ -150,6 +176,5 @@ st.pydeck_chart(pdk.Deck(
         ),
     ],
 ))
-
 
 
