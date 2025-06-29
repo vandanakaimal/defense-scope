@@ -25,11 +25,7 @@ Built by a student passionate about space, AI, and national security, this tool 
 - [Pydeck](https://deckgl.readthedocs.io/en/latest/) – Interactive maps
 - [WordCloud](https://github.com/amueller/word_cloud) – Visual NLP
 
-### 📸 Screenshots
 
-| Dashboard Overview | Word Cloud | Threat Map |
-|--------------------|------------|-------------|
-| ![screenshot](docs/screenshot1.png) | ![screenshot](docs/screenshot2.png) | ![screenshot](docs/screenshot3.png) |
 
 ### 📦 Run Locally
 
