@@ -1,4 +1,12 @@
 import streamlit as st
+
+def main():
+    st.title("DEFENSE SCOPE")
+    st.write("This dashboard analyzes global defense news in real-time.")
+
+if __name__ == "__main__":
+    main()
+
 import json
 import pandas as pd
 from textblob import TextBlob
