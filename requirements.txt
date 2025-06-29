@@ -1,6 +1,7 @@
 streamlit
 textblob
 pandas
+plotly
 wordcloud
 matplotlib
 requests
