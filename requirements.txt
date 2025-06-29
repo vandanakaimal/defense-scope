@@ -1,0 +1,7 @@
+streamlit
+textblob
+pandas
+wordcloud
+matplotlib
+requests
+pydeck
